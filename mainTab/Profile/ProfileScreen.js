@@ -1,131 +1,129 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, ScrollView, TouchableOpacity, Platform, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import COLORS from '../../colors';
+import Home from '../Home';
 
 import { supabase } from '../../lib/supabase';
-import { Session } from '@supabase/supabase-js';
+import { session } from '@supabase/supabase-js';
 import Avatar from './Avatar';
 
 export default function ProfileScreen() {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
+  const [session, setSession] = useState(null);
+  const [email, setEmail] = useState('');
   const [image, setImage] = useState('https://via.placeholder.com/150');
   const [age, setAge] = useState('');
-  const [eyeGrade, setEyeGrade] = useState('20/20');
-  const [eyeglasses, setEyeglasses] = useState('no');
-
   const [loading, setLoading] = useState(true);
+
   const [first_name, setFirstname] = useState("");
   const [last_name, setLastname] = useState("");
   const [birth_date, setBirth] = useState("");
-  const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  
 
 
-  //profile
   useEffect(() => {
-    if (session) getProfile()
-  }, [session])
+    const fetchSession = async () => {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+            console.error("Error fetching session:", error);
+            return;
+        }
+        if (session) {
+            setSession(session);
+            getProfile(session); // Fetch profile data when the session is set
+        } else {
+            console.log("No session available.");
+        }
+    };
 
-  async function getProfile() {
+    fetchSession();
+}, []);
+
+  const getProfile = async (session) => {
     try {
-      setLoading(true)
-      if (!session?.user) throw new Error("No user on the session!")
-
-      const { data, error, status } = await supabase
+      setLoading(true);
+      if (!session?.user) throw new Error("No user on the session!!!");
+      const { data, error } = await supabase
         .from("profiles")
-        .select(
-          `username, first_name, last_name, birth_date, avatar_url`
-        )
-        .eq("id", session?.user.id)
-        .single()
-      if (error && status !== 406) {
-        throw error
+        .select(`first_name, last_name, birth_date, age, avatar_url`)
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) {
+        Alert.alert("Error fetching profile:", error.message);
+        return;
       }
 
       if (data) {
-        setUsername(data.username)
-        setFirstname(data.first_name)
-        setLastname(data.last_name)
-        setBirth(data.birth_date)
-        setAvatarUrl(data.avatar_url)
+        setFirstname(data.first_name);
+        setLastname(data.last_name);
+        setBirth(data.birth_date);
+        setAge(data.age);
+        setAvatarUrl(data.avatar_url);
       }
     } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message)
-      }
+      Alert.alert("Error:", error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   async function updateProfile({
-    username,
     first_name,
     last_name,
     birth_date,
-    avatar_url
+    age,
+    avatar_url,
   }) {
     try {
       setLoading(true)
-      if (!session?.user) throw new Error("No user on the session!")
+      if (!session || !session.user) throw new Error("No user on the session!");
 
+      // Convert the date to YYYY-MM-DD format
+      const formattedDate = new Date(birth_date).toISOString().split('T')[0];
+      
       const updates = {
         id: session?.user.id,
-        username,
         first_name,
         last_name,
-        birth_date,
+        birth_date: formattedDate,  // Ensure the correct format
+        age,
         avatar_url,
         updated_at: new Date()
       }
 
-      const { error } = await supabase.from("profiles").upsert(updates)
+      console.log(updates); // Debugging here
 
+      const { error } = await supabase.from("profiles").upsert(updates);
       if (error) {
-        throw error
+        console.error("Error updating profile:", error);
+        throw error;
+      }      
+
+      } catch (error) {
+        if (error instanceof Error) {
+          Alert.alert(error.message)
+        }
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message)
-      }
-    } finally {
-      setLoading(false)
-    }
   }
 
-
-
-  // Load image from AsyncStorage when component mounts
-  useEffect(() => {
-    const loadImage = async () => {
-      try {
-        const savedImageUri = await AsyncStorage.getItem('profileImage');
-        if (savedImageUri) {
-          setImage(savedImageUri);
-        }
-      } catch (error) {
-        console.error("Failed to load image from storage", error);
-      }
-    };
-
-    loadImage();
-  }, []);
-
-  // Save image URI to AsyncStorage
-  const saveImage = async (uri) => {
-    try {
-      await AsyncStorage.setItem('profileImage', uri);
-    } catch (error) {
-      console.error("Failed to save image to storage", error);
-    }
-  };
+  // // Save session to AsyncStorage
+  // const saveSession = async (session) => {
+  //   try {
+  //       await AsyncStorage.setItem('session', JSON.stringify(session));
+  //   } catch (error) {
+  //       console.error('Error saving session:', error);
+  //   }
+  // };
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -137,20 +135,54 @@ export default function ProfileScreen() {
     setShow(true);
   };
 
+  const saveImage = async (uri) => {
+    const fileName = uri.split('/').pop(); // Extract the file name from the URI
+    const response = await fetch(uri); // Fetch the image data
+    const blob = await response.blob(); // Convert to Blob
+
+    // Upload the blob to the 'avatars' bucket
+    const { data, error } = await supabase.storage
+        .from('avatars') // Use the bucket you created
+        .upload(`profile_images/${fileName}`, blob, {
+            contentType: 'image/jpeg', // Set the content type
+        });
+
+    if (error) {
+        console.error('Error uploading image:', error);
+        return null;
+    } else {
+        // Get the public URL after upload
+        const publicUrl = supabase.storage.from('avatars').getPublicUrl(`profile_images/${fileName}`).publicURL;
+        return publicUrl; // Return the public URL
+    }
+  };
+
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
     });
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
-      setImage(uri);
-      saveImage(uri); // Save the new image URI
-    }
-  };
+      setImage(uri); // Set the local image URI
+
+      // Save the new image URI to Supabase and get the public URL
+      const publicUrl = await saveImage(uri);
+      if (publicUrl) {
+          setAvatarUrl(publicUrl); // Set the avatar URL
+          await updateProfile({
+              first_name,
+              last_name,
+              birth_date,
+              avatar_url: publicUrl, // Update profile with the new avatar URL
+          });
+        }
+      }
+    };
 
   return (
     <View style={styles.container}>
@@ -166,21 +198,20 @@ export default function ProfileScreen() {
       </LinearGradient>
 
       <View>
-            <Avatar
-              size={50}
-              url={avatarUrl}
-              onUpload={url => {
-                setAvatarUrl(url)
-                updateProfile({
-                  username,
-                  first_name,
-                  last_name,
-                  birth_date,
-                  avatar_url: url
-                })
-              }}
-            />
-        </View>
+          <Avatar
+            size={50}
+            url={avatarUrl}
+            onUpload={(url) => {
+              setAvatarUrl(url);
+              updateProfile({
+                first_name,
+                last_name,
+                birth_date,
+                avatar_url: url,
+              });
+            }}
+          />
+      </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.innerContainer}>
@@ -190,21 +221,20 @@ export default function ProfileScreen() {
             <Text>First Name</Text>
             <TextInput
               placeholder="First Name"
-              value={first_name || ""}
+              value={first_name}
               onChangeText={text => setFirstname(text)}
               style={styles.input}
             />
             <Text>Last Name</Text>
             <TextInput
               placeholder="Last Name"
-              value={last_name || ""}
+              value={last_name}
               onChangeText={text => setLastname(text)}
               style={styles.input}
             />
             <Text>Date of Birth</Text>
             <TouchableOpacity onPress={showDatepicker}>
               <TextInput
-                placeholder="Date of Birth"
                 style={styles.input}
                 value={date.toLocaleDateString() || birth_date}
                 onChangeText={text => setBirth(text)}
@@ -224,59 +254,27 @@ export default function ProfileScreen() {
               placeholder="Age"
               style={styles.input}
               value={age}
-              onChangeText={setAge}
+              onChangeText={text => setAge(text)}
               keyboardType="numeric"
-            />
-            <Text>Eye Grade</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={eyeGrade}
-                onValueChange={(itemValue) => setEyeGrade(itemValue)}
-                style={styles.picker}
-                itemStyle={styles.pickerItem}
-              >
-                <Picker.Item label="20/20" value="20/20" />
-                <Picker.Item label="20/25" value="20/25" />
-                <Picker.Item label="20/30" value="20/30" />
-                <Picker.Item label="20/40" value="20/40" />
-                <Picker.Item label="20/50" value="20/50" />
-                <Picker.Item label="20/70" value="20/70" />
-                <Picker.Item label="20/100" value="20/100" />
-                <Picker.Item label="20/200" value="20/200" />
-              </Picker>
-            </View>
-            <Text>Eyeglasses</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={eyeglasses}
-                onValueChange={(itemValue) => setEyeglasses(itemValue)}
-                style={styles.picker}
-                itemStyle={styles.pickerItem}
-              >
-                <Picker.Item label="Yes" value="yes" />
-                <Picker.Item label="No" value="no" />
-              </Picker>
-            </View>
-            <Text>PIN</Text>
-            <TextInput
-              placeholder="PIN"
-              style={styles.input}
-              defaultValue="1234"
-              secureTextEntry={true}
             />
             <Text>Email</Text>
             <TextInput
-              placeholder="Email"
               style={styles.input}
-              defaultValue="grangerH85@gmail.com"
+              value={session?.user?.email} disabled
             />
-            <Button mode="contained" style={styles.button}>
-              Save
-            </Button>
+            <TouchableOpacity onPress={() => updateProfile({ 
+                first_name, 
+                last_name, 
+                birth_date: date.toISOString(), 
+                age,
+                avatar_url: avatarUrl })}>
+              <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+
           </View>
         </View>
       </ScrollView>
-    </View>
+    </View> 
   );
 }
 
@@ -309,9 +307,15 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 50,
   },
+  buttonText: {
+    backgroundColor: '#007260',
+    fontSize: 16,
+    textAlign: 'center',
+    height: 30,
+  },
   scrollContainer: {
     flexGrow: 1,
-    paddingTop: 220, 
+    paddingTop: 150, 
     paddingBottom: 100, 
   },
   innerContainer: {
@@ -323,7 +327,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   form: {
     width: '100%',
@@ -348,9 +352,6 @@ const styles = StyleSheet.create({
   },
   pickerItem: {
     textAlign: 'center',
-  },
-  button: {
-    marginTop: 10,
   },
 });
 

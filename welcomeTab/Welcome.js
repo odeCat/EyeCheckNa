@@ -3,6 +3,7 @@ import { View, Text, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import COLORS from '../colors';
 import Button from '../Button';
+import fonts from '../fonts';
 
 const Welcome = ({ navigation }) => {
   return (
@@ -86,20 +87,24 @@ const Welcome = ({ navigation }) => {
           }}
         >
           <Text
-            style={{
+            style={[
+              fonts.poppinsBold,
+              {
               fontSize: 50,
               fontWeight: '800',
               color: COLORS.white
-            }}
+            }]}
           >
             Let's Get
           </Text>
           <Text
-            style={{
+            style={[
+              fonts.poppinsBold,
+              {
               fontSize: 46,
               fontWeight: '800',
               color: COLORS.white
-            }}
+            }]}
           >
             Started
           </Text>

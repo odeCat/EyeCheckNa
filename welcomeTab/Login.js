@@ -1,11 +1,11 @@
-import { View, Text, Image, Pressable, TextInput, TouchableOpacity, AppState  } from 'react-native';
+import { View, Text, Image, Pressable, TextInput, TouchableOpacity, AppState, Alert  } from 'react-native';
 import React, { useState } from 'react' 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
 import COLORS from '../colors';
 import Button from '../Button';
-
+import { session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase'
 
 AppState.addEventListener('change', (state) => {
@@ -20,14 +20,14 @@ const Login = ({ navigation }) => {
 
     const [isPasswordShown, setIsPasswordShown] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     async function signInWithEmail() {
-        setLoading(true)
+        setLoading(true);
         const { error } = await supabase.auth.signInWithPassword({
+            // data: { session },
             email: email,
             password: password
         })
@@ -41,7 +41,6 @@ const Login = ({ navigation }) => {
         }
 
     }
-    
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>

@@ -2,14 +2,16 @@ import React from 'react';
 import { StyleSheet, View, Text, Image, TextInput, ScrollView, TouchableOpacity  } from 'react-native';
 import { Avatar, Icon, Card } from 'react-native-elements';
 import COLORS from '../colors';
+import fonts from '../fonts';
+import { supabase } from "../lib/supabase";
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, firstname, lastname}) => {
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Hi, Alice Guo Hua Ping 👋</Text>
+          <Text style={fonts.poppinsBold}>Welcome, {firstname} {lastname} 👋</Text>
           <Text style={styles.subtitle}>Patient</Text>
         </View>
         <Avatar
@@ -57,7 +59,7 @@ const Home = ({ navigation }) => {
         </Card>
 
         <Card containerStyle={styles.card}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ResultScreen')}>
             <Image style={styles.cardImage} source={require('../assets/Result.jpg')}  />
             <Text style={styles.cardText}>Result</Text>
             <Text style={styles.cardSubText}>View Result</Text>
@@ -82,10 +84,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 40,
     marginBottom: 2,
-  },
-  greeting: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   subtitle: {
     fontSize: 14,
@@ -146,6 +144,7 @@ const styles = StyleSheet.create({
     height: 300,  // Increased height for larger image
   },
   cardText: {
+    // fontFamily: fonts.poppinsBold,
     fontWeight: 'bold',
     fontSize: 18,  // Increased font size for better readability
     marginTop: 10,

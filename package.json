@@ -40,7 +40,8 @@
     "react-native-screens": "^3.34.0",
     "react-native-tflite": "^0.0.2",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-vector-icons": "^10.1.0"
+    "react-native-vector-icons": "^10.1.0",
+    "expo-font": "~12.0.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

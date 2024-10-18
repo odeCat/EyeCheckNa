@@ -22,7 +22,7 @@ const SettingsScreen = () => {
 
       {/* Account Settings Section */}
       <Text style={styles.sectionHeader}>Account Settings</Text>
-      <TouchableOpacity style={styles.option}>
+      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ProfileScreen')}>
         <Text style={styles.optionText}>Edit profile</Text>
         <Text style={styles.arrow}>{'>'}</Text>
       </TouchableOpacity>
@@ -32,16 +32,11 @@ const SettingsScreen = () => {
         <Text style={styles.arrow}>{'>'}</Text>
       </TouchableOpacity>
 
-      {/* Push Notifications */}
-      <View style={styles.option}>
-        <Text style={styles.optionText}>Push notifications</Text>
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
-      </View>
+      {/* Log out */}
+      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Welcome')}>
+        <Text style={styles.optionText}>Log out</Text>
+        <Text style={styles.arrow}>{'>'}</Text>
+      </TouchableOpacity>
 
       {/* More Section */}
       <Text style={styles.sectionHeader}>More</Text>
@@ -56,7 +51,7 @@ const SettingsScreen = () => {
         <Text style={styles.arrow}>{'>'}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.option}>
+      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Terms')}>
         <Text style={styles.optionText}>Terms and conditions</Text>
         <Text style={styles.arrow}>{'>'}</Text>
 

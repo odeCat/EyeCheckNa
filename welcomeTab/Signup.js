@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, AppState } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, AppState, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 import COLORS from '../colors';
 import Button from '../Button';
+import { session } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 
-import { supabase } from '../lib/supabase'
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh()
+  } else {
+    supabase.auth.stopAutoRefresh()
+  }
+})
+
 
 const Signup = ({ navigation }) => {
+
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -18,10 +28,7 @@ const Signup = ({ navigation }) => {
 
   async function signUpWithEmail() {
     setLoading(true)
-    const {
-      data: { session },
-      error
-    } = await supabase.auth.signUp({
+    const { data: { session }, error } = await supabase.auth.signUp({
       email: email,
       password: password
     })
@@ -34,8 +41,8 @@ const Signup = ({ navigation }) => {
       setLoading(false)
     }
 
-    if (!session) Alert.alert("Please check your inbox for email verification!")
-    setLoading(false)
+    // if (!session) Alert.alert("Please check your inbox for email verification!")
+    // setLoading(false)
   }
 
   return (
@@ -179,10 +186,9 @@ const Signup = ({ navigation }) => {
             marginLeft: 8
           }}>I agree with
             <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
-              <Text style={{
-                color: COLORS.primary
-              }}> Terms</Text>
-            </TouchableOpacity> and
+              <Text style={{color: COLORS.primary, fontSize: 16, marginLeft: 8}}> Terms</Text>
+            </TouchableOpacity>
+            and
             <Text style={{
               color: COLORS.primary
             }}> Privacy</Text>
