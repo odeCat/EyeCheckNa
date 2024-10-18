@@ -5,10 +5,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider as PaperProvider } from 'react-native-paper';
+import * as Font from 'expo-font';
+import fonts from './fonts';
+import { supabase } from "./lib/supabase";
 
 // screens
 import Home from './mainTab/Home';
 import InfoScreen from './mainTab/InfoScreen';
+import ResultScreen from './mainTab/ResultScreen';
 import ProfileScreen from './mainTab/Profile/ProfileScreen';
 import EyeCareFAQScreen from './mainTab/EyeCareFAQScreen';
 import AstigmatismTestScreen from './mainTab/EyeTests/AstigmatismTestScreen';
@@ -25,6 +29,13 @@ import Login from './welcomeTab/Login';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const getFonts = () => Font.loadAsync({
+  'Poppins-Regular': require('./assets/fonts/Poppins-Regular.ttf'),
+  'Poppins-Light': require('./assets/fonts/Poppins-Light.ttf'),
+  'Poppins-Medium': require('./assets/fonts/Poppins-Medium.ttf'),
+  'Poppins-Bold': require('./assets/fonts/Poppins-Bold.ttf'),
+});
+
 
 function HomeStack() {
   return (
@@ -33,6 +44,7 @@ function HomeStack() {
       <Stack.Screen name="VisualAcuityTestScreen" component={VisualAcuityTestScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AstigmatismTestScreen" component={AstigmatismTestScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="InfoScreen" component={InfoScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ResultScreen" component={ResultScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -94,6 +106,21 @@ function MainTabs() {
 }
 
 function App() {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  //For the fonts
+  useEffect(() => {
+    async function loadFonts() {
+      await getFonts();
+      setFontsLoaded(true);
+    }
+    loadFonts();
+    }, []);
+
+  if (!fontsLoaded) {
+    return;
+  }
+
   return (
     <NavigationContainer>
       <PaperProvider>
@@ -105,10 +132,11 @@ function App() {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
           <Stack.Screen name="ChangePassword" component={ChangePassword} />
+          <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         </Stack.Navigator>
       </PaperProvider>
-      
     </NavigationContainer>
+
   );
 }
 
