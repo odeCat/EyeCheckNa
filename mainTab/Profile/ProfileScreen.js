@@ -116,15 +116,6 @@ export default function ProfileScreen() {
       }
   }
 
-  // // Save session to AsyncStorage
-  // const saveSession = async (session) => {
-  //   try {
-  //       await AsyncStorage.setItem('session', JSON.stringify(session));
-  //   } catch (error) {
-  //       console.error('Error saving session:', error);
-  //   }
-  // };
-
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
@@ -221,14 +212,14 @@ export default function ProfileScreen() {
             <Text>First Name</Text>
             <TextInput
               placeholder="First Name"
-              value={first_name}
+              value={first_name} disabled
               onChangeText={text => setFirstname(text)}
               style={styles.input}
             />
             <Text>Last Name</Text>
             <TextInput
               placeholder="Last Name"
-              value={last_name}
+              value={last_name} disabled
               onChangeText={text => setLastname(text)}
               style={styles.input}
             />

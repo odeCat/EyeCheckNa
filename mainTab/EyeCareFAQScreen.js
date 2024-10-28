@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, SafeAreaView, ScrollView, StyleSheet, Image, TouchableOpacity, Animated, Easing } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import BackIcon from '../assets/backIcon.png';
 import EyeIcon from '../assets/eyeIcon.png';
@@ -14,16 +14,17 @@ import examIcon from '../assets/examIcon.png';
 
 const EyeCareFAQScreen = () => {
   const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState('EyeCare');
-  const underlinePosition = useRef(new Animated.Value(0)).current; // For underline position
+  const route = useRoute(); // Access the route to get params
+
+  const [activeTab, setActiveTab] = useState(route.params?.initialTab || 'EyeCare'); // Set initialTab from params, default to 'EyeCare'
+  const underlinePosition = useRef(new Animated.Value(activeTab === 'EyeCare' ? 0 : 1)).current;
 
   useEffect(() => {
-    // Animate the underline to the active tab's position
     Animated.timing(underlinePosition, {
-      toValue: activeTab === 'EyeCare' ? 0 : 1, // 0 for EyeCare, 1 for FAQs
+      toValue: activeTab === 'EyeCare' ? 0 : 1,
       duration: 300,
       easing: Easing.linear,
-      useNativeDriver: false, // Use native driver only for non-layout properties
+      useNativeDriver: false,
     }).start();
   }, [activeTab]);
 
@@ -76,6 +77,9 @@ const EyeCareFAQScreen = () => {
           </Text>
         </View>
       </View>
+      <View style={styles.item}>
+        
+      </View>
       </ScrollView>
     </SafeAreaView>
     </>
@@ -116,6 +120,9 @@ const EyeCareFAQScreen = () => {
           </Text>
         </View>
       </View>
+      <View style={styles.faqItem}>
+        
+      </View>
       </ScrollView>
       </SafeAreaView>
     </>
@@ -123,7 +130,7 @@ const EyeCareFAQScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <ScrollView style={styles.container}>
+    <ScrollView >
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButtonContainer} onPress={() => navigation.navigate("Home")}>
           <Image source={BackIcon} style={styles.backIcon} />
@@ -159,6 +166,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#ffffff',
+    
   },
   header: {
     flexDirection: 'row',
@@ -197,7 +205,7 @@ const styles = StyleSheet.create({
     height: 2,
     width: '20%', 
     backgroundColor: '#0f9d58',
-    borderRadius: 1,
+    borderRadius: 2,
   },
   item: {
     flexDirection: 'row',

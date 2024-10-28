@@ -5,6 +5,7 @@ import COLORS from '../colors';
 import fonts from '../fonts';
 import { supabase } from "../lib/supabase";
 
+
 const Home = ({ navigation, firstname, lastname}) => {
   return (
     <ScrollView style={styles.container}>
@@ -22,26 +23,16 @@ const Home = ({ navigation, firstname, lastname}) => {
         />
       </View>
 
-      {/* Search Bar */}
-      <View style={styles.searchBar}>
-        <TextInput style={styles.input} placeholder="Search" />
-        <Icon name="filter" type="font-awesome" size={20} color="#000" />
-      </View>
-
       {/* Category Buttons */}
       <View style={styles.categoryContainer}>
-        <TouchableOpacity style={styles.categoryButton}>
-          <Text style={styles.categoryText}>General</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.categoryButton}>
+        <TouchableOpacity style={styles.categoryButton} onPress={() => navigation.navigate('EyeCareFAQScreen')}>
           <Text style={styles.categoryText}>Treatments</Text>
-          <View style={styles.notificationDot} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.categoryButton}>
+        <TouchableOpacity style={styles.categoryButton} onPress={() => navigation.navigate('EyeCareFAQScreen', { initialTab: 'FAQs' })}>
           <Text style={styles.categoryText}>FAQs</Text>
         </TouchableOpacity>
+
       </View>
 
       {/* Side Scrollable Cards */}
@@ -76,14 +67,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 15,
+    paddingHorizontal: '5%', 
+    paddingVertical: '2%', 
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 40,
-    marginBottom: 2,
+    marginBottom: 40,
   },
   subtitle: {
     fontSize: 14,
@@ -92,28 +84,20 @@ const styles = StyleSheet.create({
   avatar: {
     marginLeft: 10,
   },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 20,
-  },
   input: {
     flex: 1,
     marginRight: 10,
   },
   categoryContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     marginBottom: 10,
   },
   categoryButton: {
     backgroundColor: COLORS.primary,
     paddingVertical: 10,
     paddingHorizontal: 30,
-    marginLeft: 5,
+    marginRight: 10,
     borderRadius: 20,
     alignItems: 'center',
   },

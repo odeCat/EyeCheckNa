@@ -20,6 +20,7 @@ import VisualAcuityTestScreen from './mainTab/EyeTests/VisualAcuityTestScreen';
 import SettingsScreen from './mainTab/Settings/SettingsScreen';
 import PrivacyPolicyScreen from './mainTab/Settings/PrivacyPolicyScreen';
 import ChangePassword from './mainTab/Settings/ChangePasswordScreen';
+import QuickGuide from './mainTab/QuickGuide';
 
 import Welcome from './welcomeTab/Welcome';
 import Signup from './welcomeTab/Signup';
@@ -44,7 +45,9 @@ function HomeStack() {
       <Stack.Screen name="VisualAcuityTestScreen" component={VisualAcuityTestScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AstigmatismTestScreen" component={AstigmatismTestScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="InfoScreen" component={InfoScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="EyeCareFAQScreen" component={EyeCareFAQScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="ResultScreen" component={ResultScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="QuickGuide" component={QuickGuide} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -97,7 +100,7 @@ function MainTabs() {
       >
         <Tab.Screen name="HomeStack" component={HomeStack} options={{ title: 'Home' }} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Favorites" component={EyeCareFAQScreen} />
+        
         <Tab.Screen name="Settings" component={SettingsScreen}>
         </Tab.Screen>
       </Tab.Navigator>

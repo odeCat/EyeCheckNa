@@ -1,11 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { supabase } from '../../lib/supabase';
 
 const SettingsScreen = () => {
   const [isEnabled, setIsEnabled] = React.useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const navigation = useNavigation();
+
+  async function signOut() {
+    const { error } = await supabase.auth.signOut()
+    navigation.navigate("Welcome");
+  }
 
   return (
     <View style={styles.container}>
@@ -33,7 +39,7 @@ const SettingsScreen = () => {
       </TouchableOpacity>
 
       {/* Log out */}
-      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Welcome')}>
+      <TouchableOpacity style={styles.option} onPress={signOut}>
         <Text style={styles.optionText}>Log out</Text>
         <Text style={styles.arrow}>{'>'}</Text>
       </TouchableOpacity>

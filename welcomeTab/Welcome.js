@@ -11,7 +11,7 @@ const Welcome = ({ navigation }) => {
       style={{ flex: 1 }}
       colors={[COLORS.secondary, COLORS.primary]}
     >
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingHorizontal: '2%', paddingVertical: '2%'}}>
         <View>
           <Image
             source={require('../assets/hero4.jpg')}

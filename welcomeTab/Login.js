@@ -1,20 +1,19 @@
-import { View, Text, Image, Pressable, TextInput, TouchableOpacity, AppState, Alert  } from 'react-native';
-import React, { useState } from 'react' 
+import { View, Text, Image, Pressable, TextInput, TouchableOpacity, AppState, Alert, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react'; 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox"
+import Checkbox from "expo-checkbox";
 import COLORS from '../colors';
 import Button from '../Button';
-import { session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase';
 
 AppState.addEventListener('change', (state) => {
     if (state === 'active') {
-      supabase.auth.startAutoRefresh()
+      supabase.auth.startAutoRefresh();
     } else {
-      supabase.auth.stopAutoRefresh()
+      supabase.auth.stopAutoRefresh();
     }
-  })
+});
 
 const Login = ({ navigation }) => {
 
@@ -27,19 +26,17 @@ const Login = ({ navigation }) => {
     async function signInWithEmail() {
         setLoading(true);
         const { error } = await supabase.auth.signInWithPassword({
-            // data: { session },
             email: email,
             password: password
-        })
+        });
 
         if (error){ 
-            Alert.alert(error.message)
-            setLoading(false)
+            Alert.alert(error.message);
+            setLoading(false);
         } else {
             navigation.navigate('Main');
-            setLoading(false)
+            setLoading(false);
         }
-
     }
 
     return (
@@ -52,7 +49,7 @@ const Login = ({ navigation }) => {
                         marginVertical: 12,
                         color: COLORS.black
                     }}>
-                        Hey Welcome back!
+                        Hey, Welcome back!
                     </Text>
 
                     <Text style={{
@@ -60,7 +57,6 @@ const Login = ({ navigation }) => {
                         color: COLORS.black
                     }}>Hello again, check your Visual Acuity today!</Text>
                 </View>
-                {/* end of create acc */}
 
                 {/* enter email */}
                 <View style={{ marginBottom: 12 }}>
@@ -93,7 +89,6 @@ const Login = ({ navigation }) => {
                         />
                     </View>
                 </View>
-                {/* end of enter email */}
                 
                 {/* add password */}
                 <View style={{ marginBottom: 12 }}>
@@ -116,7 +111,7 @@ const Login = ({ navigation }) => {
                         <TextInput
                             placeholder='Enter your password'
                             placeholderTextColor={COLORS.black}
-                            secureTextEntry={isPasswordShown}
+                            secureTextEntry={!isPasswordShown}
                             onChangeText={text => setPassword(text)}
                             value={password}
                             style={{
@@ -132,7 +127,7 @@ const Login = ({ navigation }) => {
                             }}
                         >
                             {
-                                isPasswordShown == true ? (
+                                isPasswordShown ? (
                                     <Ionicons name="eye-off" size={24} color={COLORS.black} />
                                 ) : (
                                     <Ionicons name="eye" size={24} color={COLORS.black} />
@@ -142,8 +137,8 @@ const Login = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-                {/* end of add password */}
 
+                {/* Remember me checkbox */}
                 <View style={{
                     flexDirection: 'row',
                     marginVertical: 6
@@ -158,38 +153,29 @@ const Login = ({ navigation }) => {
                     <Text>Remember me</Text>
                 </View>
 
-                <Button
-                    title="Login"
-                    filled
-                    disabled={loading}
-                    onPress={() => signInWithEmail()}
-                    style={{
-                        marginTop: 18,
-                        marginBottom: 4,
-                    }}
-                />
-
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
-                    <View
+                {/* Login button or loading animation */}
+                {loading ? (
+                    <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 18 }} />
+                ) : (
+                    <Button
+                        title="Login"
+                        filled
+                        disabled={loading}
+                        onPress={() => signInWithEmail()}
                         style={{
-                            flex: 1,
-                            height: 1,
-                            backgroundColor: COLORS.grey,
-                            marginHorizontal: 10
+                            marginTop: 18,
+                            marginBottom: 4,
                         }}
                     />
-                    <Text style={{ fontSize: 14 }}>Or Login with</Text>
-                    <View
-                        style={{
-                            flex: 1,
-                            height: 1,
-                            backgroundColor: COLORS.grey,
-                            marginHorizontal: 10
-                        }}
-                    />
-                </View>
+                )}
 
                 {/* other sign in options */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
+                    <View style={{ flex: 1, height: 1, backgroundColor: COLORS.grey, marginHorizontal: 10 }} />
+                    <Text style={{ fontSize: 14 }}>Or Login with</Text>
+                    <View style={{ flex: 1, height: 1, backgroundColor: COLORS.grey, marginHorizontal: 10 }} />
+                </View>
+
                 <View style={{
                     flexDirection: 'row',
                     justifyContent: 'center'
@@ -216,7 +202,6 @@ const Login = ({ navigation }) => {
                             }}
                             resizeMode='contain'
                         />
-
                         <Text>Facebook</Text>
                     </TouchableOpacity>
 
@@ -242,11 +227,9 @@ const Login = ({ navigation }) => {
                             }}
                             resizeMode='contain'
                         />
-
                         <Text>Google</Text>
                     </TouchableOpacity>
                 </View>
-                {/* end other sign in options */}
 
                 <View style={{
                     flexDirection: "row",
@@ -271,4 +254,4 @@ const Login = ({ navigation }) => {
     );
 }
 
-export default Login
+export default Login;

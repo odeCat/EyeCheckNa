@@ -441,7 +441,8 @@ export default function VisualAcuityTestScreen({ navigation, route }) {
           </View>
         ) : !selectedEye ? (
           <View style={styles.eyeTestSelectionContent}>
-            <Text style={styles.testTitle}>ASTIGMATISM TEST</Text>
+            
+            <Text style={styles.testTitle}>VISUAL ACUITY TEST</Text>
             <View style={styles.eyeIconContainer}>
               <Text style={styles.eyeIcon}>👁️</Text>
             </View>
@@ -453,13 +454,13 @@ export default function VisualAcuityTestScreen({ navigation, route }) {
                 style={styles.button}
                 onPress={() => handleEyeSelection("right")}
               >
-                <Text style={styles.buttonText}>LEFT</Text>
+                <Text style={styles.buttonText}>RIGHT</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => handleEyeSelection("left")}
               >
-                <Text style={styles.buttonText}>RIGHT</Text>
+                <Text style={styles.buttonText}>LEFT</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -523,8 +524,8 @@ export default function VisualAcuityTestScreen({ navigation, route }) {
                 {" "}
                 {selectedEye} eye{" "}
               </Text>
-              COVERED! Click the arrow keys to indicate which direction the E
-              symbol is facing.
+              OPEN! Click the arrow keys to indicate which direction the E
+              symbol is facing. Cover your eye with your palm, avoid pressing your eye. 
             </Text>
           </View>
         ) : showCameraView && !bothTestsComplete ? (
